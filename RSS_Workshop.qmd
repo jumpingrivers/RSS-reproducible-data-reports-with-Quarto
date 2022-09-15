@@ -1,0 +1,353 @@
+---
+title: "Reproducible data reports with Quarto"
+author: "Rhian Davies & Nicola Rennie"
+format:
+  revealjs: 
+    theme: [default, custom.scss]
+    logo: logo.svg
+    code-link: true
+    css: custom.scss
+    self-contained: true
+    preview-links: true
+bibliography: references.bib
+---
+
+## Getting set up
+
+- Go to the welcome page [quarto.jumpingrivers.training/welcome/](https://quarto.jumpingrivers.training/welcome/)
+- Enter your e-mail address and password **papaya-guava**
+
+- Make a note of your username and password
+
+- Log in at [quarto.jumpingrivers.training](https://quarto.jumpingrivers.training/)
+
+We'll get started when the countdown finishes.
+
+```{r}
+countdown::countdown(minutes = 5,
+                    color_border = "#5b868d",
+                    color_text = "#5b868d",
+                    color_running_text = "white",
+                    color_running_background = "#5b868d",
+                    color_finished_text = "#5b868d",
+                    color_finished_background = "white",
+                    top = 0,
+                    margin = "0.3em",
+                    font_size = "2em")
+```
+
+# Introduction to Quarto
+
+Quarto let's us write documents that combine code with text. It works for multiple languages and multiple output formats. Let's explore the Quarto [gallery](https://quarto.org/docs/gallery/).
+
+## What about R Markdown?
+
+R Markdown isn't going anywhere but...
+
+* Quarto has better multi-language support
+* More user-friendly
+* Better control of the output layouts
+
+## It's not an R package but...
+
+```{r}
+#| eval: false
+#| echo: true
+library(quarto)
+quarto_render("document.qmd")
+```
+
+## Creating a new Quarto document
+
+- File > New File > Quarto Document
+
+- Set title and author
+
+- Click **Create**
+
+- Save and click **Render**
+
+## YAML header
+
+```yaml
+---
+title: "A very cool title"
+format: html
+---
+```
+
+:::{.notes}
+YAML: Yet Another Markup Language
+:::
+
+## Content
+
+* Text
+* Links
+* Images
+* Code
+* Embedded tables and plots
+* Equations
+* References
+
+Then click the **Render** button.
+
+:::{.notes}
+Demo the visual editor
+Mention "Render on Save"
+:::
+
+## Including links
+
+Check out the [Quarto documentation](https://quarto.org/).
+
+## Including images
+
+There are different ways to add images to a Quarto document. The easiest way is to use the Visual editor - click **Insert --\> Figure/Image**
+
+[![Image from Duke Lemur Center](lemur.jpg){fig-alt="Brown-collared lemur looking directly at the camera" fig-align="center"}](https://lemur.duke.edu/discover/meet-the-lemurs/red-collared-lemur/)
+
+
+## Task 1: Your first Quarto document
+
+- File > New File > Quarto Document
+
+- Set title and author
+
+- Click **Create**
+
+- Save and click **Render**
+
+- Add the text from `task1.txt`
+
+- Add a link to the Duke Lemur Center [https://lemur.duke.edu/](https://lemur.duke.edu/) 
+
+- Add an image of the Mongoose Lemur
+
+```{r}
+countdown::countdown(minutes = 15,
+                    color_border = "#5b868d",
+                    color_text = "#5b868d",
+                    color_running_text = "white",
+                    color_running_background = "#5b868d",
+                    color_finished_text = "#5b868d",
+                    color_finished_background = "white",
+                    top = 0,
+                    margin = "1.2em",
+                    font_size = "2em")
+```
+
+# Code Chunks 
+
+... and lemurs...
+
+## Loading data
+
+You can load in your data:
+
+```{r}
+#| label: load_data
+#| message: false
+#| echo: fenced
+#| cache: true
+lemurs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-24/lemur_data.csv')
+```
+
+## Chunk Options
+
+* Hide the code
+```yaml
+#| echo: false
+```
+* Show the code
+```yaml
+#| echo: true
+```
+* Show the code and the YAML
+```yaml
+#| echo: fenced
+```
+
+## Code collapsing
+
+We can also load in some R packages. But maybe, we collapse the code...
+
+```{r}
+#| label: pkgs
+#| echo: fenced
+#| message: false
+#| code-fold: true
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(gghighlight)
+```
+
+---
+
+... do some data wrangling, and print the output as a table...
+
+```{r}
+#| label: wrangling
+#| echo: fenced
+#| output-location: slide 
+df = lemurs %>% 
+  filter(taxon == "ECOL", 
+         age_category == "young_adult") %>% 
+  select(name, weight_g, sex, age_at_wt_mo) %>% 
+  filter(sex %in% c("M", "F")) %>% 
+  drop_na()
+
+df %>% 
+  head() %>% 
+  knitr::kable()
+```
+
+------------------------------------------------------------------------
+
+...or include some exploratory plots!
+
+```{r}
+#| label: plots
+#| echo: fenced
+#| message: false
+#| output-location: slide 
+#| code-overflow: wrap
+#| fig-cap: "Age vs weight of Young Adult Collared Brown Lemurs"
+#| fig-alt: "Plot of age vs weight of young adult collared brown lemurs, split by male and female showing positive relationship for both"
+ggplot(data = df,
+       mapping = aes(x = age_at_wt_mo,
+                     y = weight_g,
+                     colour = sex)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Young Adult Collared Brown Lemurs", 
+       x = "Age (months)", 
+       y = "Weight (g)") +
+  theme_minimal() 
+```
+
+## Inline code
+
+```{r}
+#| label: biggest_lemur
+#| echo: fenced
+big_lemur = lemurs %>% 
+  slice_max(weight_g, n = 1) 
+```
+
+We can also include code inline, rather than as a separate chunk.
+
+::: {.callout-note appearance="minimal"}
+The largest lemur recorded is called `` `r "\u0060r str_to_title(big_lemur$name)\u0060"` ``, who weighed `` `r "\u0060r format(big_lemur$weight_g, scientific = FALSE)\u0060"` `` grams.
+:::
+
+The largest lemur recorded is called `r str_to_title(big_lemur$name)`, who weighed `r format(big_lemur$weight_g, scientific = FALSE)` grams.
+
+## Task 2: Adding code
+
+::: {style="font-size: 0.8em;"}
+* Try to render the document, what are the problems?
+
+* Add a new code chunk to load the libraries {ggplot2}, {dplyr} and {tidyr}
+
+* Set the code chunk options for your new chunk to the hide the code and messages
+
+* Add a caption to the plot with the `fig-cap` code chunk option
+
+* Add a code chunk to fit a linear model `fit = lm(weight_g ~ age_at_wt_mo, data = df)`
+
+* Use inline code chunks to give the model fit coefficients in the sentence. Hint: `fit$coefficients`
+:::
+
+```{r}
+countdown::countdown(minutes = 15, 
+                     left = 0, 
+                     margin = "0em")
+```
+
+# Equations, journals, referencing and more...
+
+## Equations
+
+We can use LaTeX to add equations.
+
+```latex
+\begin{equation}
+\hat{e}_i = Y_i - \hat{Y}_i
+\end{equation}
+```
+
+\begin{equation}
+\hat{e}_i = Y_i - \hat{Y}_i
+\end{equation}
+
+## Styling
+
+Correctly formatted journal articles in 30 seconds?
+
+Try [quarto-journals](https://github.com/quarto-journals/) e.g. for a Journal of Statistical Software article:
+
+```yaml
+----
+title: "My Document"
+format:
+  pdf: default
+  jss-pdf:
+    keep-tex: true   
+---
+```
+
+## Referencing
+
+::: {style="font-size: 0.8em;"}
+Create a reference file:
+
+```latex
+@article{Andriambeloson2020,
+  title={Prolonged torpor in Goodman’s mouse lemurs (Microcebus lehilahytsara) from the high-altitude forest of Tsinjoarivo, central-eastern Madagascar.},
+  author={Andriambeloson JB, Greene LK, Blanco MB},
+  journal={Folia Primatologica},
+  volume={91},
+  pages={697–710},
+  year={2020}
+}
+```
+
+Add a link to your reference file in your .qmd document YAML:
+
+```yaml
+bibliography: references.bib
+```
+Then link the reference using an @.
+
+::: {.callout-note appearance="minimal"}
+To cite a paper about lemurs `[@Andriambeloson2020]`
+:::
+
+:::
+
+## Task 3: Getting paper ready
+
+- Open `task-3.qmd`
+
+- Add the equation for linear regression `y = mx + c` in \LaTeX
+
+- Link to the `reference.bib` file in your `.qmd` document YAML header
+
+- Fix the reference link using an `@`.
+
+```{r}
+countdown::countdown(minutes = 15, 
+                     left = 0, 
+                     margin = "0em")
+```
+
+## Links & Resources
+
+- Quarto docs: [quarto.org](https://quarto.org/)
+
+- RStudio Workshop: [jthomasmock.github.io/quarto-2hr-webinar](https://jthomasmock.github.io/quarto-2hr-webinar/)
+
+- Our [training courses](https://www.jumpingrivers.com/training/all-courses/)

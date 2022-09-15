@@ -1,0 +1,14 @@
+---
+title: "Lemur Statistics"
+author: "Your Name"
+format: html
+editor: visual
+---
+
+## About Lemurs
+
+The [Duke Lemur Center](https://lemur.duke.edu/) houses over 200 lemurs and bushbabies across 13 species -- the most diverse population of lemurs on Earth, outside their native Madagascar.
+
+Lemurs are the most threatened group of mammals on the planet, and 95% of lemur species are at risk of extinction.
+
+[![Image from Duke Lemur Center](mongoose-lemur.png){fig-alt="Mongoose lemur looking directly at the camera"}](https://lemur.duke.edu/discover/meet-the-lemurs/mongoose-lemur)

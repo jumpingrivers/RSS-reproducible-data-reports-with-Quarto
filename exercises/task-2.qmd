@@ -1,0 +1,56 @@
+---
+title: "Lemur Statistics"
+author: "Your Name"
+format: html 
+---
+
+## About Lemurs
+
+The [Duke Lemur Center](https://lemur.duke.edu/) houses over 200 lemurs and bushbabies across 13 species – the most diverse population of lemurs on Earth, outside their native Madagascar.
+
+Lemurs are the most threatened group of mammals on the planet, and 95% of lemur species are at risk of extinction. 
+
+[![Image from Duke Lemur Center](mongoose-lemur.png){fig-alt="Mongoose lemur looking directly at the camera" fig-align="center"}](https://lemur.duke.edu/discover/meet-the-lemurs/mongoose-lemur/)
+
+## Analysis
+
+```{r}
+#| label: load_data
+#| echo: false
+#| message: false
+#| cache: true
+lemurs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-24/lemur_data.csv')
+```
+
+```{r}
+#| label: wrangling
+#| echo: false
+df = lemurs %>% 
+  filter(taxon == "ECOL", 
+         age_category == "young_adult") %>% 
+  select(name, weight_g, sex, age_at_wt_mo) %>% 
+  filter(sex %in% c("M", "F")) %>% 
+  drop_na()
+```
+
+
+```{r}
+#| label: plots
+#| echo: false
+#| message: false
+#| fig-alt: "Plot of age vs weight of young adult collared brown lemurs, split by male and female showing positive relationship for both"
+ggplot(data = df,
+       mapping = aes(x = age_at_wt_mo,
+                     y = weight_g,
+                     colour = sex)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Young Adult Collared Brown Lemurs", 
+       x = "Age (months)", 
+       y = "Weight (g)") +
+  theme_minimal() 
+```
+
+We looked at the relationship between the age and weight of Young Adult Collared Brown Lemurs. We fitted a linear model using the `lm()` function in R. 
+
+The fitted model had a slope of ??? and an intercept of ???.

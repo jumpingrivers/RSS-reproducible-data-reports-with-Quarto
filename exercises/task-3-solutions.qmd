@@ -1,0 +1,88 @@
+---
+title: "Lemur Statistics"
+author: "Your Name"
+format: pdf
+bibliography: references.bib
+---
+
+## About Lemurs
+
+The [Duke Lemur Center](https://lemur.duke.edu/) houses over 200 lemurs and bushbabies across 13 species – the most diverse population of lemurs on Earth, outside their native Madagascar.
+
+Lemurs are the most threatened group of mammals on the planet, and 95% of lemur species are at risk of extinction. 
+
+[![Image from Duke Lemur Center](mongoose-lemur.png){fig-alt="Mongoose lemur looking directly at the camera" fig-align="center"}](https://lemur.duke.edu/discover/meet-the-lemurs/mongoose-lemur/)
+
+## Analysis
+
+```{r}
+#| label: load_data
+#| echo: false
+#| message: false
+#| cache: true
+lemurs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-24/lemur_data.csv')
+```
+
+```{r}
+#| label: load libraries
+#| echo: false
+#| message: false
+library("ggplot2")
+library("dplyr")
+library("tidyr")
+```
+
+
+```{r}
+#| label: wrangling
+#| echo: false
+df = lemurs %>% 
+  filter(taxon == "ECOL", 
+         age_category == "young_adult") %>% 
+  select(name, weight_g, sex, age_at_wt_mo) %>% 
+  filter(sex %in% c("M", "F")) %>% 
+  drop_na()
+```
+
+
+```{r}
+#| label: plots
+#| echo: false
+#| message: false
+#| fig-cap: "Age vs weight of Young Adult Collared Brown Lemurs"
+#| fig-alt: "Plot of age vs weight of young adult collared brown lemurs, split by male and female showing positive relationship for both"
+ggplot(data = df,
+       mapping = aes(x = age_at_wt_mo,
+                     y = weight_g,
+                     colour = sex)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Young Adult Collared Brown Lemurs", 
+       x = "Age (months)", 
+       y = "Weight (g)") +
+  theme_minimal() 
+```
+
+
+We looked at the relationship between the age and weight of Young Adult Collared Brown Lemurs. We fitted a linear model using the `lm()` function in R. 
+
+```{r}
+#| label: linear model
+fit = lm(weight_g ~ age_at_wt_mo, data = df)
+```
+
+\begin{equation}
+y = mx + c
+\end{equation}
+
+The fitted model had a slope of `r round(fit$coefficients[2])` and an intercept of `r round(fit$coefficients[1])`.
+
+## Hibernation in lemurs
+
+Out of all 100 or so lemur species living in Madagascar, dwarf lemurs are the only primates known to truly hibernate, though their close relatives the mouse lemurs can experience short bouts of torpor as well. During the hibernation period, which can last up to seven months, the dwarf lemur alternates between periods of torpor, which are defined by decreased metabolism, heart rate, and body temperature, and periods of intermittent arousal, during which the lemur will return to normal heart rate and body temperature, and typically catch up on sleep. \[@Andriambeloson2020\]
+
+## Conclusion
+
+By studying the variables that most affect their health, reproduction, and social dynamics, we learn how to most effectively focus our conservation efforts. And the more we learn about lemurs, the better we can educate the public around the world about just how amazing these animals are, why they need to be protected, and how each and every one of us can make a difference in their survival.
+
+### References

@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+RSS_Workshop.html
+RSS_Workshop_files/
+RSS_Workshop_cache/
+exercises/*_files/
+exercises/*_cache/
+*.html
+*.pdf
+*.env
+*.swp
+.env
+.DS_Store
